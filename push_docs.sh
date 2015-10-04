@@ -8,7 +8,8 @@ set -e
 . ./scripts/travis-doc-upload.cfg
 
 [ "$TRAVIS_BRANCH" = master ]
-
+[ "$TRAVIS_OS_NAME" = linux ]
+[ "$TRAVIS_RUST_VERSION" = stable ]
 [ "$TRAVIS_PULL_REQUEST" = false ]
 
 eval key=\$encrypted_${SSH_KEY_TRAVIS_ID}_key
