@@ -288,6 +288,12 @@
 <span id="246">246</span>
 <span id="247">247</span>
 <span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013-2015 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -504,10 +510,16 @@
     <span class='doccomment'>/// Returns whether the given terminal attribute is supported.</span>
     <span class='kw'>fn</span> <span class='ident'>supports_attr</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>attr</span>: <span class='ident'>Attr</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span>;
 
-    <span class='doccomment'>/// Resets all terminal attributes and color to the default.</span>
+    <span class='doccomment'>/// Resets all terminal attributes and colors to their defaults.</span>
     <span class='doccomment'>///</span>
     <span class='doccomment'>/// Returns `Ok(true)` if the terminal was reset, `Ok(false)` otherwise, and `Err(e)` if there</span>
     <span class='doccomment'>/// was an I/O error.</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// *Note: This does not flush.*</span>
+    <span class='doccomment'>///</span>
+    <span class='doccomment'>/// That means the reset command may get buffered so, if you aren&#39;t planning on doing anything</span>
+    <span class='doccomment'>/// else that might flush stdout&#39;s buffer (e.g. writing a line of text), you should flush after</span>
+    <span class='doccomment'>/// calling reset.</span>
     <span class='kw'>fn</span> <span class='ident'>reset</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>io</span>::<span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>bool</span><span class='op'>&gt;</span>;
 
     <span class='doccomment'>/// Moves the cursor up one line.</span>
