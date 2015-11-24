@@ -394,13 +394,6 @@
 <span id="352">352</span>
 <span id="353">353</span>
 <span id="354">354</span>
-<span id="355">355</span>
-<span id="356">356</span>
-<span id="357">357</span>
-<span id="358">358</span>
-<span id="359">359</span>
-<span id="360">360</span>
-<span id="361">361</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2013 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -754,13 +747,6 @@
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>boolfnames</span>.<span class='ident'>len</span>(), <span class='ident'>boolnames</span>.<span class='ident'>len</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>numfnames</span>.<span class='ident'>len</span>(), <span class='ident'>numnames</span>.<span class='ident'>len</span>());
         <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>stringfnames</span>.<span class='ident'>len</span>(), <span class='ident'>stringnames</span>.<span class='ident'>len</span>());
-    }
-
-    <span class='attribute'>#[<span class='ident'>test</span>]</span>
-    <span class='attribute'>#[<span class='ident'>ignore</span>(<span class='ident'>reason</span> <span class='op'>=</span> <span class='string'>&quot;no ncurses on buildbots, needs a bundled terminfo file to test against&quot;</span>)]</span>
-    <span class='kw'>fn</span> <span class='ident'>test_parse</span>() {
-        <span class='comment'>// FIXME #6870: Distribute a compiled file in src/tests and test there</span>
-        <span class='comment'>// parse(io::fs_reader(&amp;p(&quot;/usr/share/terminfo/r/rxvt-256color&quot;)).unwrap(), false);</span>
     }
 }
 </pre>
