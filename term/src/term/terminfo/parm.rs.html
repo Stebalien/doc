@@ -684,7 +684,7 @@
     <span class='ident'>PushParam</span>,
     <span class='ident'>CharConstant</span>,
     <span class='ident'>CharClose</span>,
-    <span class='ident'>IntConstant</span>(<span class='ident'>i16</span>),
+    <span class='ident'>IntConstant</span>(<span class='ident'>i32</span>),
     <span class='ident'>FormatPattern</span>(<span class='ident'>Flags</span>, <span class='ident'>FormatState</span>),
     <span class='ident'>SeekIfElse</span>(<span class='ident'>usize</span>),
     <span class='ident'>SeekIfElsePercent</span>(<span class='ident'>usize</span>),
@@ -704,7 +704,7 @@
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Param</span> {
     <span class='ident'>Words</span>(<span class='ident'>String</span>),
-    <span class='ident'>Number</span>(<span class='ident'>i16</span>)
+    <span class='ident'>Number</span>(<span class='ident'>i32</span>)
 }
 
 <span class='doccomment'>/// Container for static and dynamic variable arrays</span>
@@ -783,7 +783,7 @@
                     <span class='string'>&#39;c&#39;</span> <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>stack</span>.<span class='ident'>pop</span>() {
                         <span class='comment'>// if c is 0, use 0200 (128) for ncurses compatibility</span>
                         <span class='prelude-val'>Some</span>(<span class='ident'>Number</span>(<span class='number'>0</span>)) <span class='op'>=&gt;</span> <span class='ident'>output</span>.<span class='ident'>push</span>(<span class='number'>128u8</span>),
-                        <span class='comment'>// TODO: Check bounds?</span>
+                        <span class='comment'>// Don&#39;t check bounds. ncurses just casts and truncates.</span>
                         <span class='prelude-val'>Some</span>(<span class='ident'>Number</span>(<span class='ident'>c</span>)) <span class='op'>=&gt;</span> <span class='ident'>output</span>.<span class='ident'>push</span>(<span class='ident'>c</span> <span class='kw'>as</span> <span class='ident'>u8</span>),
                         <span class='prelude-val'>Some</span>(_) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='string'>&quot;a non-char was used with %c&quot;</span>.<span class='ident'>to_string</span>()),
                         <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='string'>&quot;stack is empty&quot;</span>.<span class='ident'>to_string</span>()),
@@ -794,7 +794,7 @@
                     <span class='string'>&#39;\&#39;&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>CharConstant</span>,
                     <span class='string'>&#39;{&#39;</span> <span class='op'>=&gt;</span> <span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>IntConstant</span>(<span class='number'>0</span>),
                     <span class='string'>&#39;l&#39;</span> <span class='op'>=&gt;</span> <span class='kw'>match</span> <span class='ident'>stack</span>.<span class='ident'>pop</span>() {
-                        <span class='prelude-val'>Some</span>(<span class='ident'>Words</span>(<span class='ident'>s</span>)) <span class='op'>=&gt;</span> <span class='ident'>stack</span>.<span class='ident'>push</span>(<span class='ident'>Number</span>(<span class='ident'>s</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>i16</span>)),
+                        <span class='prelude-val'>Some</span>(<span class='ident'>Words</span>(<span class='ident'>s</span>)) <span class='op'>=&gt;</span> <span class='ident'>stack</span>.<span class='ident'>push</span>(<span class='ident'>Number</span>(<span class='ident'>s</span>.<span class='ident'>len</span>() <span class='kw'>as</span> <span class='ident'>i32</span>)),
                         <span class='prelude-val'>Some</span>(_) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='string'>&quot;a non-str was used with %l&quot;</span>.<span class='ident'>to_string</span>()),
                         <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='string'>&quot;stack is empty&quot;</span>.<span class='ident'>to_string</span>()) 
                     },
@@ -913,7 +913,7 @@
                 }
             },
             <span class='ident'>CharConstant</span> <span class='op'>=&gt;</span> {
-                <span class='ident'>stack</span>.<span class='ident'>push</span>(<span class='ident'>Number</span>(<span class='ident'>c</span> <span class='kw'>as</span> <span class='ident'>i16</span>));
+                <span class='ident'>stack</span>.<span class='ident'>push</span>(<span class='ident'>Number</span>(<span class='ident'>c</span> <span class='kw'>as</span> <span class='ident'>i32</span>));
                 <span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>CharClose</span>;
             },
             <span class='ident'>CharClose</span> <span class='op'>=&gt;</span> <span class='kw'>if</span> <span class='ident'>cur</span> <span class='op'>!=</span> <span class='string'>&#39;\&#39;&#39;</span> {
@@ -924,7 +924,7 @@
                     <span class='ident'>stack</span>.<span class='ident'>push</span>(<span class='ident'>Number</span>(<span class='ident'>i</span>));
                     <span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>Nothing</span>;
                 } <span class='kw'>else</span> <span class='kw'>if</span> <span class='kw'>let</span> <span class='prelude-val'>Some</span>(<span class='ident'>digit</span>) <span class='op'>=</span> <span class='ident'>cur</span>.<span class='ident'>to_digit</span>(<span class='number'>10</span>) {
-                    <span class='kw'>match</span> <span class='ident'>i</span>.<span class='ident'>checked_mul</span>(<span class='number'>10</span>).<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>i_ten</span><span class='op'>|</span><span class='ident'>i_ten</span>.<span class='ident'>checked_add</span>(<span class='ident'>digit</span> <span class='kw'>as</span> <span class='ident'>i16</span>)) {
+                    <span class='kw'>match</span> <span class='ident'>i</span>.<span class='ident'>checked_mul</span>(<span class='number'>10</span>).<span class='ident'>and_then</span>(<span class='op'>|</span><span class='ident'>i_ten</span><span class='op'>|</span><span class='ident'>i_ten</span>.<span class='ident'>checked_add</span>(<span class='ident'>digit</span> <span class='kw'>as</span> <span class='ident'>i32</span>)) {
                         <span class='prelude-val'>Some</span>(<span class='ident'>i</span>) <span class='op'>=&gt;</span> {
                             <span class='ident'>state</span> <span class='op'>=</span> <span class='ident'>IntConstant</span>(<span class='ident'>i</span>);
                             <span class='ident'>old_state</span> <span class='op'>=</span> <span class='ident'>Nothing</span>;
