@@ -380,6 +380,7 @@
 <span id="337">337</span>
 <span id="338">338</span>
 <span id="339">339</span>
+<span id="340">340</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2012-2014 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -412,7 +413,7 @@
 
 
 <span class='doccomment'>/// A parsed terminfo database entry.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>TermInfo</span> {
     <span class='doccomment'>/// Names for the terminal</span>
     <span class='kw'>pub</span> <span class='ident'>names</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>,
@@ -564,6 +565,7 @@
 
 <span class='doccomment'>/// A Terminal that knows how many colors it supports, with a reference to its</span>
 <span class='doccomment'>/// parsed Terminfo database record.</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Clone</span>, <span class='ident'>Debug</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>struct</span> <span class='ident'>TerminfoTerminal</span><span class='op'>&lt;</span><span class='ident'>T</span><span class='op'>&gt;</span> {
     <span class='ident'>num_colors</span>: <span class='ident'>u16</span>,
     <span class='ident'>out</span>: <span class='ident'>T</span>,

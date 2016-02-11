@@ -596,7 +596,7 @@
 <span class='doccomment'>/// Most attributes can only be turned on and must be turned off with term.reset().</span>
 <span class='doccomment'>/// The ones that can be turned off explicitly take a boolean value.</span>
 <span class='doccomment'>/// Color is also represented as an attribute for convenience.</span>
-<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>, <span class='ident'>Copy</span>, <span class='ident'>Clone</span>)]</span>
+<span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Hash</span>, <span class='ident'>Eq</span>, <span class='ident'>Copy</span>, <span class='ident'>Clone</span>)]</span>
 <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Attr</span> {
     <span class='doccomment'>/// Bold (or possibly bright) mode</span>
     <span class='ident'>Bold</span>,
