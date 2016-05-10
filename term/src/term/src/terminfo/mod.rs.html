@@ -381,6 +381,13 @@
 <span id="338">338</span>
 <span id="339">339</span>
 <span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
 </pre><pre class='rust '>
 <span class='comment'>// Copyright 2012-2014 The Rust Project Developers. See the COPYRIGHT</span>
 <span class='comment'>// file at the top-level directory of this distribution and at</span>
@@ -463,6 +470,45 @@
         <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>reader</span> <span class='op'>=</span> <span class='ident'>BufReader</span>::<span class='ident'>new</span>(<span class='ident'>file</span>);
         <span class='ident'>parse</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>reader</span>, <span class='boolval'>false</span>)
     }
+
+    <span class='doccomment'>/// Retrieve a capability `cmd` and expand it with `params`, writing result to `out`.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>apply_cap</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>cmd</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>params</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>Param</span>], <span class='ident'>out</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>io</span>::<span class='ident'>Write</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>strings</span>.<span class='ident'>get</span>(<span class='ident'>cmd</span>) {
+            <span class='prelude-val'>Some</span>(<span class='ident'>cmd</span>) <span class='op'>=&gt;</span> {
+                <span class='kw'>match</span> <span class='ident'>expand</span>(<span class='kw-2'>&amp;</span><span class='ident'>cmd</span>, <span class='ident'>params</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Variables</span>::<span class='ident'>new</span>()) {
+                    <span class='prelude-val'>Ok</span>(<span class='ident'>s</span>) <span class='op'>=&gt;</span> {
+                        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>out</span>.<span class='ident'>write_all</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>));
+                        <span class='prelude-val'>Ok</span>(())
+                    }
+                    <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='ident'>e</span>.<span class='ident'>into</span>()),
+                }
+            }
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(::<span class='ident'>Error</span>::<span class='ident'>NotSupported</span>),
+        }
+    }
+
+    <span class='doccomment'>/// Write the reset string to `out`.</span>
+    <span class='kw'>pub</span> <span class='kw'>fn</span> <span class='ident'>reset</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>out</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>io</span>::<span class='ident'>Write</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
+        <span class='comment'>// are there any terminals that have color/attrs and not sgr0?</span>
+        <span class='comment'>// Try falling back to sgr, then op</span>
+        <span class='kw'>let</span> <span class='ident'>cmd</span> <span class='op'>=</span> <span class='kw'>match</span> [(<span class='string'>&quot;sgr0&quot;</span>, <span class='kw-2'>&amp;</span>[] <span class='kw'>as</span> <span class='kw-2'>&amp;</span>[<span class='ident'>Param</span>]), (<span class='string'>&quot;sgr&quot;</span>, <span class='kw-2'>&amp;</span>[<span class='ident'>Param</span>::<span class='ident'>Number</span>(<span class='number'>0</span>)]), (<span class='string'>&quot;op&quot;</span>, <span class='kw-2'>&amp;</span>[])]
+                            .<span class='ident'>iter</span>()
+                            .<span class='ident'>filter_map</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span>(<span class='ident'>cap</span>, <span class='ident'>params</span>)<span class='op'>|</span> {
+                                <span class='self'>self</span>.<span class='ident'>strings</span>.<span class='ident'>get</span>(<span class='ident'>cap</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> (<span class='ident'>c</span>, <span class='ident'>params</span>))
+                            })
+                            .<span class='ident'>next</span>() {
+            <span class='prelude-val'>Some</span>((<span class='ident'>op</span>, <span class='ident'>params</span>)) <span class='op'>=&gt;</span> {
+                <span class='kw'>match</span> <span class='ident'>expand</span>(<span class='ident'>op</span>, <span class='ident'>params</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Variables</span>::<span class='ident'>new</span>()) {
+                    <span class='prelude-val'>Ok</span>(<span class='ident'>cmd</span>) <span class='op'>=&gt;</span> <span class='ident'>cmd</span>,
+                    <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>e</span>.<span class='ident'>into</span>()),
+                }
+            }
+            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(::<span class='ident'>Error</span>::<span class='ident'>NotSupported</span>),
+        };
+        <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>out</span>.<span class='ident'>write_all</span>(<span class='kw-2'>&amp;</span><span class='ident'>cmd</span>));
+        <span class='prelude-val'>Ok</span>(())
+    }
+
 }
 
 <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>Eq</span>, <span class='ident'>PartialEq</span>)]</span>
@@ -577,7 +623,7 @@
     <span class='kw'>fn</span> <span class='ident'>fg</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>color</span>: <span class='ident'>color</span>::<span class='ident'>Color</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>color</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dim_if_necessary</span>(<span class='ident'>color</span>);
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>num_colors</span> <span class='op'>&gt;</span> <span class='ident'>color</span> {
-            <span class='kw'>return</span> <span class='self'>self</span>.<span class='ident'>apply_cap</span>(<span class='string'>&quot;setaf&quot;</span>, <span class='kw-2'>&amp;</span>[<span class='ident'>Param</span>::<span class='ident'>Number</span>(<span class='ident'>color</span> <span class='kw'>as</span> <span class='ident'>i32</span>)]);
+            <span class='kw'>return</span> <span class='self'>self</span>.<span class='ident'>ti</span>.<span class='ident'>apply_cap</span>(<span class='string'>&quot;setaf&quot;</span>, <span class='kw-2'>&amp;</span>[<span class='ident'>Param</span>::<span class='ident'>Number</span>(<span class='ident'>color</span> <span class='kw'>as</span> <span class='ident'>i32</span>)], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>out</span>);
         }
         <span class='prelude-val'>Err</span>(::<span class='ident'>Error</span>::<span class='ident'>ColorOutOfRange</span>)
     }
@@ -585,7 +631,7 @@
     <span class='kw'>fn</span> <span class='ident'>bg</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>color</span>: <span class='ident'>color</span>::<span class='ident'>Color</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
         <span class='kw'>let</span> <span class='ident'>color</span> <span class='op'>=</span> <span class='self'>self</span>.<span class='ident'>dim_if_necessary</span>(<span class='ident'>color</span>);
         <span class='kw'>if</span> <span class='self'>self</span>.<span class='ident'>num_colors</span> <span class='op'>&gt;</span> <span class='ident'>color</span> {
-            <span class='kw'>return</span> <span class='self'>self</span>.<span class='ident'>apply_cap</span>(<span class='string'>&quot;setab&quot;</span>, <span class='kw-2'>&amp;</span>[<span class='ident'>Param</span>::<span class='ident'>Number</span>(<span class='ident'>color</span> <span class='kw'>as</span> <span class='ident'>i32</span>)]);
+            <span class='kw'>return</span> <span class='self'>self</span>.<span class='ident'>ti</span>.<span class='ident'>apply_cap</span>(<span class='string'>&quot;setab&quot;</span>, <span class='kw-2'>&amp;</span>[<span class='ident'>Param</span>::<span class='ident'>Number</span>(<span class='ident'>color</span> <span class='kw'>as</span> <span class='ident'>i32</span>)], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>out</span>);
         }
         <span class='prelude-val'>Err</span>(::<span class='ident'>Error</span>::<span class='ident'>ColorOutOfRange</span>)
     }
@@ -594,7 +640,7 @@
         <span class='kw'>match</span> <span class='ident'>attr</span> {
             <span class='ident'>Attr</span>::<span class='ident'>ForegroundColor</span>(<span class='ident'>c</span>) <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>fg</span>(<span class='ident'>c</span>),
             <span class='ident'>Attr</span>::<span class='ident'>BackgroundColor</span>(<span class='ident'>c</span>) <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>bg</span>(<span class='ident'>c</span>),
-            _ <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>apply_cap</span>(<span class='ident'>cap_for_attr</span>(<span class='ident'>attr</span>), <span class='kw-2'>&amp;</span>[]),
+            _ <span class='op'>=&gt;</span> <span class='self'>self</span>.<span class='ident'>ti</span>.<span class='ident'>apply_cap</span>(<span class='ident'>cap_for_attr</span>(<span class='ident'>attr</span>), <span class='kw-2'>&amp;</span>[], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>out</span>),
         }
     }
 
@@ -609,24 +655,7 @@
     }
 
     <span class='kw'>fn</span> <span class='ident'>reset</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='comment'>// are there any terminals that have color/attrs and not sgr0?</span>
-        <span class='comment'>// Try falling back to sgr, then op</span>
-        <span class='kw'>let</span> <span class='ident'>cmd</span> <span class='op'>=</span> <span class='kw'>match</span> [(<span class='string'>&quot;sgr0&quot;</span>, <span class='kw-2'>&amp;</span>[] <span class='kw'>as</span> <span class='kw-2'>&amp;</span>[<span class='ident'>Param</span>]), (<span class='string'>&quot;sgr&quot;</span>, <span class='kw-2'>&amp;</span>[<span class='ident'>Param</span>::<span class='ident'>Number</span>(<span class='number'>0</span>)]), (<span class='string'>&quot;op&quot;</span>, <span class='kw-2'>&amp;</span>[])]
-                            .<span class='ident'>iter</span>()
-                            .<span class='ident'>filter_map</span>(<span class='op'>|</span><span class='kw-2'>&amp;</span>(<span class='ident'>cap</span>, <span class='ident'>params</span>)<span class='op'>|</span> {
-                                <span class='self'>self</span>.<span class='ident'>ti</span>.<span class='ident'>strings</span>.<span class='ident'>get</span>(<span class='ident'>cap</span>).<span class='ident'>map</span>(<span class='op'>|</span><span class='ident'>c</span><span class='op'>|</span> (<span class='ident'>c</span>, <span class='ident'>params</span>))
-                            })
-                            .<span class='ident'>next</span>() {
-            <span class='prelude-val'>Some</span>((<span class='ident'>op</span>, <span class='ident'>params</span>)) <span class='op'>=&gt;</span> {
-                <span class='kw'>match</span> <span class='ident'>expand</span>(<span class='ident'>op</span>, <span class='ident'>params</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Variables</span>::<span class='ident'>new</span>()) {
-                    <span class='prelude-val'>Ok</span>(<span class='ident'>cmd</span>) <span class='op'>=&gt;</span> <span class='ident'>cmd</span>,
-                    <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(<span class='ident'>e</span>.<span class='ident'>into</span>()),
-                }
-            }
-            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='kw'>return</span> <span class='prelude-val'>Err</span>(::<span class='ident'>Error</span>::<span class='ident'>NotSupported</span>),
-        };
-        <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>out</span>.<span class='ident'>write_all</span>(<span class='kw-2'>&amp;</span><span class='ident'>cmd</span>));
-        <span class='prelude-val'>Ok</span>(())
+        <span class='self'>self</span>.<span class='ident'>ti</span>.<span class='ident'>reset</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>out</span>)
     }
 
     <span class='kw'>fn</span> <span class='ident'>supports_reset</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='ident'>bool</span> {
@@ -638,15 +667,15 @@
     }
 
     <span class='kw'>fn</span> <span class='ident'>cursor_up</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>apply_cap</span>(<span class='string'>&quot;cuu1&quot;</span>, <span class='kw-2'>&amp;</span>[])
+        <span class='self'>self</span>.<span class='ident'>ti</span>.<span class='ident'>apply_cap</span>(<span class='string'>&quot;cuu1&quot;</span>, <span class='kw-2'>&amp;</span>[], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>out</span>)
     }
 
     <span class='kw'>fn</span> <span class='ident'>delete_line</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>apply_cap</span>(<span class='string'>&quot;dl&quot;</span>, <span class='kw-2'>&amp;</span>[])
+        <span class='self'>self</span>.<span class='ident'>ti</span>.<span class='ident'>apply_cap</span>(<span class='string'>&quot;dl&quot;</span>, <span class='kw-2'>&amp;</span>[], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>out</span>)
     }
 
     <span class='kw'>fn</span> <span class='ident'>carriage_return</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='self'>self</span>.<span class='ident'>apply_cap</span>(<span class='string'>&quot;cr&quot;</span>, <span class='kw-2'>&amp;</span>[])
+        <span class='self'>self</span>.<span class='ident'>ti</span>.<span class='ident'>apply_cap</span>(<span class='string'>&quot;cr&quot;</span>, <span class='kw-2'>&amp;</span>[], <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='ident'>out</span>)
     }
 
     <span class='kw'>fn</span> <span class='ident'>get_ref</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='kw-2'>&amp;</span><span class='ident'>T</span> {
@@ -693,21 +722,6 @@
             <span class='ident'>color</span> <span class='op'>-</span> <span class='number'>8</span>
         } <span class='kw'>else</span> {
             <span class='ident'>color</span>
-        }
-    }
-
-    <span class='kw'>fn</span> <span class='ident'>apply_cap</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>, <span class='ident'>cmd</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>, <span class='ident'>params</span>: <span class='kw-2'>&amp;</span>[<span class='ident'>Param</span>]) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span>()<span class='op'>&gt;</span> {
-        <span class='kw'>match</span> <span class='self'>self</span>.<span class='ident'>ti</span>.<span class='ident'>strings</span>.<span class='ident'>get</span>(<span class='ident'>cmd</span>) {
-            <span class='prelude-val'>Some</span>(<span class='ident'>cmd</span>) <span class='op'>=&gt;</span> {
-                <span class='kw'>match</span> <span class='ident'>expand</span>(<span class='kw-2'>&amp;</span><span class='ident'>cmd</span>, <span class='ident'>params</span>, <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>Variables</span>::<span class='ident'>new</span>()) {
-                    <span class='prelude-val'>Ok</span>(<span class='ident'>s</span>) <span class='op'>=&gt;</span> {
-                        <span class='macro'>try</span><span class='macro'>!</span>(<span class='self'>self</span>.<span class='ident'>out</span>.<span class='ident'>write_all</span>(<span class='kw-2'>&amp;</span><span class='ident'>s</span>));
-                        <span class='prelude-val'>Ok</span>(())
-                    }
-                    <span class='prelude-val'>Err</span>(<span class='ident'>e</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(<span class='ident'>e</span>.<span class='ident'>into</span>()),
-                }
-            }
-            <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='prelude-val'>Err</span>(::<span class='ident'>Error</span>::<span class='ident'>NotSupported</span>),
         }
     }
 }
