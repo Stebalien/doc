@@ -425,11 +425,11 @@
     <span class='doccomment'>/// Names for the terminal</span>
     <span class='kw'>pub</span> <span class='ident'>names</span>: <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>String</span><span class='op'>&gt;</span>,
     <span class='doccomment'>/// Map of capability name to boolean value</span>
-    <span class='kw'>pub</span> <span class='ident'>bools</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>String</span>, <span class='ident'>bool</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>bools</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='ident'>bool</span><span class='op'>&gt;</span>,
     <span class='doccomment'>/// Map of capability name to numeric value</span>
-    <span class='kw'>pub</span> <span class='ident'>numbers</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>String</span>, <span class='ident'>u16</span><span class='op'>&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>numbers</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='ident'>u16</span><span class='op'>&gt;</span>,
     <span class='doccomment'>/// Map of capability name to raw (unexpanded) string</span>
-    <span class='kw'>pub</span> <span class='ident'>strings</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='ident'>String</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span>,
+    <span class='kw'>pub</span> <span class='ident'>strings</span>: <span class='ident'>HashMap</span><span class='op'>&lt;</span><span class='kw-2'>&amp;</span><span class='lifetime'>&#39;static</span> <span class='ident'>str</span>, <span class='ident'>Vec</span><span class='op'>&lt;</span><span class='ident'>u8</span><span class='op'>&gt;&gt;</span>,
 }
 
 <span class='kw'>impl</span> <span class='ident'>TermInfo</span> {
