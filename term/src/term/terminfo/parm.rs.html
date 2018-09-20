@@ -732,6 +732,15 @@
 <span id="732">732</span>
 <span id="733">733</span>
 <span id="734">734</span>
+<span id="735">735</span>
+<span id="736">736</span>
+<span id="737">737</span>
+<span id="738">738</span>
+<span id="739">739</span>
+<span id="740">740</span>
+<span id="741">741</span>
+<span id="742">742</span>
+<span id="743">743</span>
 </pre><pre class="rust ">
 <span class="comment">// Copyright 2012 The Rust Project Developers. See the COPYRIGHT</span>
 <span class="comment">// file at the top-level directory of this distribution and at</span>
@@ -753,6 +762,7 @@
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Clone</span>, <span class="ident">Copy</span>, <span class="ident">PartialEq</span>)]</span>
 <span class="kw">enum</span> <span class="ident">States</span> {
     <span class="ident">Nothing</span>,
+    <span class="ident">Delay</span>,
     <span class="ident">Percent</span>,
     <span class="ident">SetVar</span>,
     <span class="ident">GetVar</span>,
@@ -899,8 +909,16 @@
             <span class="ident">Nothing</span> <span class="op">=&gt;</span> {
                 <span class="kw">if</span> <span class="ident">cur</span> <span class="op">==</span> <span class="string">&#39;%&#39;</span> {
                     <span class="ident">state</span> <span class="op">=</span> <span class="ident">Percent</span>;
+                } <span class="kw">else</span> <span class="kw">if</span> <span class="ident">cur</span> <span class="op">==</span> <span class="string">&#39;$&#39;</span> {
+                    <span class="ident">state</span> <span class="op">=</span> <span class="ident">Delay</span>;
                 } <span class="kw">else</span> {
                     <span class="ident">output</span>.<span class="ident">push</span>(<span class="ident">c</span>);
+                }
+            }
+            <span class="ident">Delay</span> <span class="op">=&gt;</span> {
+                <span class="ident">old_state</span> <span class="op">=</span> <span class="ident">Nothing</span>;
+                <span class="kw">if</span> <span class="ident">cur</span> <span class="op">==</span> <span class="string">&#39;&gt;&#39;</span> {
+                    <span class="ident">state</span> <span class="op">=</span> <span class="ident">Nothing</span>;
                 }
             }
             <span class="ident">Percent</span> <span class="op">=&gt;</span> {
