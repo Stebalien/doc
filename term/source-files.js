@@ -1,5 +1,4 @@
 var N = null;var sourcesIndex = {};
-sourcesIndex["byteorder"] = {"name":"","files":["io.rs","lib.rs"]};
 sourcesIndex["cfg_if"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["dirs"] = {"name":"","files":["lib.rs","lin.rs"]};
 sourcesIndex["dirs_sys"] = {"name":"","files":["lib.rs","xdg_user_dirs.rs"]};
